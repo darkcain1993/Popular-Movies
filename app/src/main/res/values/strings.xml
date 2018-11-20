@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="sort">Sort</string>
+    <string name="popular_sort_descend">Sort By Popularity</string>
+    <string name="rating_sort_descend">Sort By Rating</string>
+    <string name="plot_overview">Plot Overview:</string>
+    <string name="user_rating">User Rating:</string>
+    <string name="release_date">Release Date:</string>
+    <string name="error_message1"> Error: Internet Access Not Detected!</string>
+</resources>
