@@ -29,8 +29,8 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements PosterAdapter.PosterItemClickHandler {
 
 
-    private static String popularSortLink = "https://api.themoviedb.org/3/discover/movie?api_key=fad75f9595c15a0dcd198dd8ca7a56ed&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
-    private static String topRatingSortLink = "https://api.themoviedb.org/3/movie/top_rated?api_key=fad75f9595c15a0dcd198dd8ca7a56ed&language=en-US&page=1";
+    private static String popularSortLink = "https://api.themoviedb.org/3/discover/movie?api_key={enter key here}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
+    private static String topRatingSortLink = "https://api.themoviedb.org/3/movie/top_rated?api_key={enter key here}&language=en-US&page=1";
 
     private PosterAdapter posterAdapter;
 
