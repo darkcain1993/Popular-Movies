@@ -26,7 +26,8 @@ public class DetailActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        MovieDetails movieDetails = getIntent().getParcelableExtra("parcel_data");
+        String parcelData = DetailActivity.this.getString(R.string.parcel_data);
+        MovieDetails movieDetails = getIntent().getParcelableExtra(parcelData);
 
         updateUI(movieDetails);
     }
