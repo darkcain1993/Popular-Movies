@@ -1,22 +1,22 @@
 package com.example.android.popularmovies;
 
-import android.app.DownloadManager;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
+
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
+
 import android.widget.TextView;
 
 import com.android.volley.Cache;
@@ -30,25 +30,14 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.android.popularmovies.Utilities.JsonUtility;
-import com.example.android.popularmovies.Utilities.NetUtilities;
-
 import org.json.JSONObject;
-
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.net.URL;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import static com.example.android.popularmovies.Utilities.Constants.popularSortLink;
+import static com.example.android.popularmovies.Utilities.Constants.topRatingSortLink;
 
 public class MainActivity extends AppCompatActivity implements PosterAdapter.PosterItemClickHandler {
-
-
-    private static String apiKey = BuildConfig.APIKey;
-
-    private static String popularSortLink = "https://api.themoviedb.org/3/movie/popular?api_key=" + apiKey;
-    private static String topRatingSortLink = "https://api.themoviedb.org/3/movie/top_rated?api_key=" + apiKey;
 
     private PosterAdapter posterAdapter;
 
@@ -111,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
 
                         mErrorMessage2.setVisibility(View.INVISIBLE);
                         mPosterRecycViews.setVisibility(View.VISIBLE);
-                        
+
                         //Parse the JSON string and store in a list of Movie objects
                         List<MovieDetails> movieDetailsList = JsonUtility.parseMovieDetailsJson(response);
                         // display the data

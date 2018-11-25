@@ -13,14 +13,12 @@ import java.util.List;
 
 public class JsonUtility {
 
-    // This method will take in the JSON string and parse it
+    // This method will take in the JSON object response and parse it
     public static List<MovieDetails> parseMovieDetailsJson(JSONObject movieInformation){
 
         try{
-            // Create the JSON Movie List Object that contains the movie information for multiple movies
-            //JSONObject movieInformation = new JSONObject(json);
 
-            // The JSON object above contains an array of movie information, so create an array to store it
+            // The JSON object contains an array of movie information, so create an array to store it
             JSONArray moviesArray = movieInformation.getJSONArray("results");
 
             // Loop through the movie array and separate it into individual JSON Objects
