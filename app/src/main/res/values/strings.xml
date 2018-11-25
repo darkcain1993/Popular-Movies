@@ -7,4 +7,6 @@
     <string name="user_rating">User Rating:</string>
     <string name="release_date">Release Date:</string>
     <string name="error_message1"> Error: Internet Access Not Detected!</string>
+    <string name="error_message2">Loading Error!</string>
+    <string name="parcel_data">Parcel Data</string>
 </resources>

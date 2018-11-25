@@ -12,6 +12,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import static com.example.android.popularmovies.Utilities.Constants.imageUrl;
+
 
 public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.PosterViewHolder> {
 
@@ -53,9 +55,9 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.PosterView
     public void onBindViewHolder(@NonNull PosterViewHolder holder, int position) {
 
         // creates a string from the movie object image strings
-        String imageUrl = "http://image.tmdb.org/t/p/" + "w342" + mMovieItems.get(position).getPosterImage();
+
         // loads the image into the image view holder
-        Picasso.get().load(imageUrl).into(holder.imageItemView);
+        Picasso.get().load(imageUrl + mMovieItems.get(position).getPosterImage()).into(holder.imageItemView);
     }
 
     @Override // This method tells the adapter how many views it needs to handle

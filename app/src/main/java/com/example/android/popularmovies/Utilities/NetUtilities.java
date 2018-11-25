@@ -8,7 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
-
+// This file is no longer used. Kept here for knowledge only.
 // This class will be used to make requests to through networking activities using Urls
 public class NetUtilities {
 

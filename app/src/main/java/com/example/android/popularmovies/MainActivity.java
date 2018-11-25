@@ -1,42 +1,49 @@
 package com.example.android.popularmovies;
 
+
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
+
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ProgressBar;
+
 import android.widget.TextView;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.android.popularmovies.Utilities.JsonUtility;
-import com.example.android.popularmovies.Utilities.NetUtilities;
-
-import java.io.IOException;
-import java.net.URL;
+import org.json.JSONObject;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import static com.example.android.popularmovies.Utilities.Constants.popularSortLink;
+import static com.example.android.popularmovies.Utilities.Constants.topRatingSortLink;
 
 public class MainActivity extends AppCompatActivity implements PosterAdapter.PosterItemClickHandler {
 
-
-    private static String popularSortLink = "https://api.themoviedb.org/3/discover/movie?api_key={enter key here}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1";
-    private static String topRatingSortLink = "https://api.themoviedb.org/3/movie/top_rated?api_key={enter key here}&language=en-US&page=1";
-
     private PosterAdapter posterAdapter;
 
-    @BindView(R.id.pb_movie_loading_bar) ProgressBar mMovieProgressbar;
     @BindView(R.id.rv_posters)RecyclerView mPosterRecycViews;
     @BindView(R.id.tv_error_message1) TextView mErrorMessage1;
+    @BindView(R.id.tv_error_message2) TextView mErrorMessage2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,59 +70,60 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
 
             mErrorMessage1.setVisibility(View.INVISIBLE);
             mPosterRecycViews.setVisibility(View.VISIBLE);
-            executeTask(sortLink);
+            startApp(sortLink);
         }
     }
 
+    //Information sourced from https://developer.android.com/training/volley/requestqueue
+    //09/11/18
+    // This method makes a network request using Androids Volley mechanisms to retrieve the json data
+    public void startApp(String movieLink){
+        RequestQueue mRequestQueue;
+
+        // Instantiate the cache
+        Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024); // 1MB cap
+
+        // Set up the network to use HttpURLConnection as the HTTP client.
+        Network network = new BasicNetwork(new HurlStack());
+
+        // Instantiate the RequestQueue with the cache and network.
+        mRequestQueue = new RequestQueue(cache, network);
+
+        // Start the queue
+        mRequestQueue.start();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
+                (Request.Method.GET, movieLink, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        mErrorMessage2.setVisibility(View.INVISIBLE);
+                        mPosterRecycViews.setVisibility(View.VISIBLE);
+
+                        //Parse the JSON string and store in a list of Movie objects
+                        List<MovieDetails> movieDetailsList = JsonUtility.parseMovieDetailsJson(response);
+                        // display the data
+                        loadMovieData(movieDetailsList);
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO: Handle error
+                        Log.i("TAG", error.toString());
+                        mErrorMessage2.setVisibility(View.VISIBLE);
+                        mPosterRecycViews.setVisibility(View.INVISIBLE);
+
+                    }
 
 
-    // This creates a task that is run on a separate thread
-    public class MovieDBQueryTask extends AsyncTask<URL, Void, String> {
+                });
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mMovieProgressbar.setVisibility(View.VISIBLE);
-        }
 
-        @Override //Take in the url as an input, store it in a variable, and return the response as a string
-        protected String doInBackground(URL... urls) {
-            URL searchMovieUrl = urls[0];
-            String movieDbSearchResults = null;
+        mRequestQueue.add(jsonObjectRequest);
 
-            try{
-                movieDbSearchResults = NetUtilities.getResponseFromUrl(searchMovieUrl);
-            }catch(IOException e){
-                return null;
-            }
-
-            return movieDbSearchResults;
-        }
-
-        @Override //This method accepts the movie website json string and executes the remaining code
-        protected void onPostExecute(String movieDbSearchSearchResults) {
-            mMovieProgressbar.setVisibility(View.INVISIBLE);
-
-            if(movieDbSearchSearchResults != null && !movieDbSearchSearchResults.equals("")){
-
-                //Parse the JSON string and store in a list of Movie objects
-                List<MovieDetails> movieDetailsList = JsonUtility.parseMovieDetailsJson(movieDbSearchSearchResults);
-                // display the data
-                loadMovieData(movieDetailsList);
-            }else{
-                //show some kind of error
-            }
-        }
     }
-
-
-    // This method takes in a string to build the url and executes the query using the url
-    public void executeTask(String webUrlString){
-
-        URL url = NetUtilities.buildUrl(webUrlString);
-        new MovieDBQueryTask().execute(url);
-    }
-
 
     public void loadMovieData(List movieDetailsList){
 
@@ -127,25 +135,25 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
     @Override //This method opens the next activity and loads data based on the index passed through from the adapter onClick method
     public void onPosterItemClick(MovieDetails movieDetails) {
 
+
+        String parcelData = MainActivity.this.getString(R.string.parcel_data);
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra("parcel_data", movieDetails);
+        intent.putExtra(parcelData, movieDetails);
         startActivity(intent);
     }
 
-    //Method sourced from https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out
-    //by user Levit 12/05/14
+    //Information sourced from https://developer.android.com/training/monitoring-device-state/connectivity-monitoring
+    //05/08/18
     //This method checks if there is internet access and returns a boolean
     public boolean isOnline() {
-        Runtime runtime = Runtime.getRuntime();
-        try {
-            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
-            int     exitValue = ipProcess.waitFor();
-            return (exitValue == 0);
-        }
-        catch (IOException e)          { e.printStackTrace(); }
-        catch (InterruptedException e) { e.printStackTrace(); }
 
-        return false;
+        Context context = MainActivity.this;
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        return isConnected;
     }
 
     @Override //Override this method to inflate the menu resource

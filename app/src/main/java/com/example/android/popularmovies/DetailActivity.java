@@ -12,6 +12,9 @@ import com.squareup.picasso.Picasso;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.android.popularmovies.Utilities.Constants.imageUrl;
+import static com.example.android.popularmovies.Utilities.Constants.imageUrl1;
+
 public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.tv_movie_title) TextView movieTitle;
     @BindView(R.id.iv_movie_poster) ImageView moviePoster;
@@ -26,7 +29,8 @@ public class DetailActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        MovieDetails movieDetails = getIntent().getParcelableExtra("parcel_data");
+        String parcelData = DetailActivity.this.getString(R.string.parcel_data);
+        MovieDetails movieDetails = getIntent().getParcelableExtra(parcelData);
 
         updateUI(movieDetails);
     }
@@ -37,9 +41,8 @@ public class DetailActivity extends AppCompatActivity {
         userRating.setText(String.valueOf(movieDetails.getUserRating()));
         releaseDate.setText(movieDetails.getReleaseDate());
 
-        // Creates a string from the movie object image strings
-        String imageUrl = "http://image.tmdb.org/t/p/" + "w780" + movieDetails.getPosterImage();
+
         // Loads the image into the image view holder
-        Picasso.get().load(imageUrl).into(moviePoster);
+        Picasso.get().load(imageUrl1 + movieDetails.getPosterImage()).into(moviePoster);
     }
 }
