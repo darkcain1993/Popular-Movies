@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".DetailActivity">
-
 
 
     <ScrollView
@@ -17,78 +17,123 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv_movie_title"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:textAlignment="center"
-                android:textColor="#000000"
-                android:padding="10dp"
-                android:background="#d6d6d6" />
+                android:background="#d6d6d6"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_movie_title"
+                    android:layout_width="310dp"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:textAlignment="center"
+                    android:textColor="#000000"
+                    android:textSize="40sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/ib_favorite"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center"
+                    android:onClick="addToFavorites"
+                    tools:src="@android:drawable/btn_star_big_on" />
+
+            </LinearLayout>
+
 
             <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/iv_movie_poster"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="#d6d6d6"/>
+                android:background="#d6d6d6" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/plot_overview"
-                android:textSize="15sp"
-                android:textColor="#000000"
-                android:paddingBottom="5dp"
-                android:paddingTop="5dp"
-                android:layout_marginStart="20dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/tv_plot_overview"
-                android:paddingBottom="5dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/user_rating"
-                android:textSize="15sp"
-                android:textColor="#000000"
-                android:paddingBottom="5dp"
                 android:paddingTop="5dp"
-                android:layout_marginStart="20dp"/>
+                android:paddingBottom="5dp"
+                android:text="@string/plot_overview"
+                android:textColor="#000000"
+                android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/tv_plot_overview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv_user_rating"
-                android:paddingBottom="5dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:textColor="#ff0a02"/>
+                android:paddingBottom="5dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/release_date"
-                android:textSize="15sp"
-                android:textColor="#000000"
-                android:paddingBottom="5dp"
+                android:layout_marginStart="20dp"
                 android:paddingTop="5dp"
-                android:layout_marginStart="20dp"/>
+                android:paddingBottom="5dp"
+                android:text="@string/user_rating"
+                android:textColor="#000000"
+                android:textSize="15sp" />
 
             <TextView
+                android:id="@+id/tv_user_rating"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/tv_release_date"
-                android:paddingBottom="5dp"
                 android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp" />
+                android:layout_marginEnd="20dp"
+                android:paddingBottom="5dp"
+                android:textColor="#ff0a02" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="@string/release_date"
+                android:textColor="#000000"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tv_release_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:paddingBottom="5dp" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_movie_trailer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                >
+
+            </android.support.v7.widget.RecyclerView>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#8ad9c0">
+
+                <ListView
+                    android:id="@+id/lv_reviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@android:color/white">
+
+                </ListView>
+
+            </FrameLayout>
+
 
         </LinearLayout>
     </ScrollView>

@@ -20,20 +20,23 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.PosterView
     //Create variable to hold the list of movies (this will be the data the adapter will use)
     private List<MovieDetails> mMovieItems;
 
-    private final PosterItemClickHandler mClickhandler;
+    private PosterItemClickHandler mClickhandler;
 
     //This interface holes the onclick listener
     public interface PosterItemClickHandler{
         void onPosterItemClick(MovieDetails movieDetails);
     }
 
-    // This method takes in a list of movies and saves it in the above variable, this method will later take in the click listener
+
+    // This helper method takes in a list of movies and saves it in the above variable, this method will later take in the click listener
     // (this is how all needed parts are initialized)
     public PosterAdapter(List movieDetails, PosterItemClickHandler clickHandler){
         mMovieItems = movieDetails;
         mClickhandler = clickHandler;
 
     }
+
+
 
     @NonNull
     @Override // This method inflates the view that will be used by the recycler
@@ -54,11 +57,11 @@ public class PosterAdapter extends RecyclerView.Adapter<PosterAdapter.PosterView
               // the holders "image view" using Picasso
     public void onBindViewHolder(@NonNull PosterViewHolder holder, int position) {
 
-        // creates a string from the movie object image strings
-
         // loads the image into the image view holder
         Picasso.get().load(imageUrl + mMovieItems.get(position).getPosterImage()).into(holder.imageItemView);
     }
+
+
 
     @Override // This method tells the adapter how many views it needs to handle
     public int getItemCount() {
