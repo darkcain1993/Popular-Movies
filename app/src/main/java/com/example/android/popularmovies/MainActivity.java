@@ -50,17 +50,18 @@ import static com.example.android.popularmovies.Utilities.Constants.topRatingSor
 
 public class MainActivity extends AppCompatActivity implements PosterAdapter.PosterItemClickHandler {
 
-    private PosterAdapter posterAdapter;
+   private PosterAdapter posterAdapter;
     private MovieDataBase mDb;
     private FavoritesAdapter favoritesAdapter;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private final String FavoriteViewState = "favorites-view-state";
     private boolean VIEWSTATE1;
+    private GridLayoutManager layoutManager1;
 
 
     @BindView(R.id.rv_posters)RecyclerView mPosterRecycViews;
-    @BindView(R.id.rv_favorites) RecyclerView mFavRecycViews;
+    //@BindView(R.id.rv_favorites) RecyclerView mFavRecycViews;
     @BindView(R.id.tv_error_message1) TextView mErrorMessage1;
     @BindView(R.id.tv_error_message2) TextView mErrorMessage2;
 
@@ -78,27 +79,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
 
 
 
-        // This sets up a touch method for the favorites list that allows for deleting by swipe.
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT|ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
-            }
 
-            @Override
-            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int direction) {
-                // Live data implementation not needed here because database already has an "observer" which adjusts the database after every delete
-                AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        int position = viewHolder.getAdapterPosition();
-                        List<MovieEntry> movieEntries = favoritesAdapter.getFavorites();
-                        mDb.movieDao().deleteMovie(movieEntries.get(position));
-                    }
-                });
-
-            }
-        }).attachToRecyclerView(mFavRecycViews);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         Log.d("TEST onCreate", "The views may have updated HERE.");
@@ -109,24 +90,18 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
     public void setRecyclerViews(){
         // Create the grid layout and apply it to the poster recycler view
         GridLayoutManager layoutManager = new GridLayoutManager(this,3);
+        layoutManager1 = new GridLayoutManager(this,1);
         mPosterRecycViews.setLayoutManager(layoutManager);
         mPosterRecycViews.setHasFixedSize(true);
 
-        // Create the linear layout and apply it to the favorites recycler view
-        LinearLayoutManager layoutManager1 = new LinearLayoutManager(this);
-        mFavRecycViews.setLayoutManager(layoutManager1);
     }
 
     // This method updates the UI based on whether there is a network connection or not.
     public void updateUI(String movieLink){
         if(!isOnline()){
-
             mErrorMessage1.setVisibility(View.VISIBLE);
             mPosterRecycViews.setVisibility(View.INVISIBLE);
-            mFavRecycViews.setVisibility(View.INVISIBLE);
         }else{
-
-            mFavRecycViews.setVisibility(View.INVISIBLE);
             mErrorMessage1.setVisibility(View.INVISIBLE);
             mPosterRecycViews.setVisibility(View.VISIBLE);
             startApp(movieLink);
@@ -153,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
                     @Override
                     public void onResponse(JSONObject response) {
 
+                        setRecyclerViews();
                         mErrorMessage2.setVisibility(View.INVISIBLE);
                         mPosterRecycViews.setVisibility(View.VISIBLE);
                         VIEWSTATE1 = false;
@@ -193,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
             public void onChanged(@Nullable List<MovieEntry> movieEntries) {
                 Log.d("TAG", "UPDATE FROM THE DATABASE using livedata in viewmodel");
                 favoritesAdapter = new FavoritesAdapter(movieEntries);
-                mFavRecycViews.setAdapter(favoritesAdapter);
             }
         });
 
@@ -202,8 +177,9 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
     //This method updates the main view to show the favorites list
     public void showFavsList(){
 
-        mFavRecycViews.setVisibility(View.VISIBLE);
-        mPosterRecycViews.setVisibility(View.INVISIBLE);
+        mPosterRecycViews.setLayoutManager(layoutManager1);
+        mPosterRecycViews.setHasFixedSize(false);
+        mPosterRecycViews.setAdapter(favoritesAdapter);
         mErrorMessage1.setVisibility(View.INVISIBLE);
         VIEWSTATE1 = true;
     }
@@ -271,12 +247,10 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         super.onResume();
         boolean favoritesState = prefs.getBoolean(FavoriteViewState, VIEWSTATE1);
         if(favoritesState){
-            mFavRecycViews.setVisibility(View.VISIBLE);
-            mPosterRecycViews.setVisibility(View.INVISIBLE);
-            mErrorMessage1.setVisibility(View.INVISIBLE);
-            VIEWSTATE1 = true;
             Log.d("TEST onResume", "The views should have updated HERE.");
-            //showFavsList();
+            showFavsList();
+        }else{
+            showFavsList();
         }
     }
 
