@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.android.popularmovies.Database.MovieEntry;
@@ -18,9 +19,17 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     //Create variable to hold the list of movies (this will be the data the adapter will use)
     private List<MovieEntry> mMovieEntries;
+    private FavoritesClickHandler mClickHandler;
+    private MovieDetails mMovieItems;
 
-    public FavoritesAdapter(List<MovieEntry> movieEntries){
+    //This interface holes the onclick listener
+    public interface FavoritesClickHandler{
+        void onFavoritesClick(int adapterPosition);
+    }
+
+    public FavoritesAdapter(List<MovieEntry> movieEntries, FavoritesClickHandler clickHandler){
         mMovieEntries = movieEntries;
+        mClickHandler = clickHandler;
     }
 
     public List<MovieEntry> getFavorites(){
@@ -63,16 +72,24 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
     }
 
     //This class contains the view holder which will handle all view endpoints
-    class FavoriteViewHolder extends RecyclerView.ViewHolder  {
+    class FavoriteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
         ImageView imageItemView;
         TextView plotTextView;
         TextView titleTextView;
+        Button delete;
 
         private FavoriteViewHolder(View movieView){
             super(movieView);
             imageItemView = movieView.findViewById(R.id.iv_movie_poster1);
             titleTextView = movieView.findViewById(R.id.tv_movie_title1);
             plotTextView = movieView.findViewById(R.id.tv_plot_overview1);
+            delete = movieView.findViewById(R.id.deleteButton);
+            delete.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            mClickHandler.onFavoritesClick(getAdapterPosition());
         }
     }
 

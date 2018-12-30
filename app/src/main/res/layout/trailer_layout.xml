@@ -12,7 +12,7 @@
         android:id="@+id/play_button"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        tools:src="@android:drawable/btn_star_big_on" />
+        android:background="@android:drawable/ic_media_play" />
 
     <TextView
         android:id="@+id/tv_trailer_title"

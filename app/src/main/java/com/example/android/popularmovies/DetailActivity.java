@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -59,6 +60,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     @BindView(R.id.ib_favorite) ImageButton favoritesButton;
     @BindView(R.id.rv_movie_trailer) RecyclerView trailerView;
     @BindView(R.id.lv_reviews) ListView reviewsView;
+    @BindView(R.id.reviews_layout) FrameLayout reviewlayout;
 
 
     private MovieDataBase mDb;
@@ -66,6 +68,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private MovieDetails movieDetails;
     private boolean FAV;
     private TrailerAdapter trailerAdapter;
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -195,7 +198,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                     public void onResponse(JSONObject response) {
 
                         //mErrorMessage2.setVisibility(View.INVISIBLE);
-                        //mPosterRecycViews.setVisibility(View.VISIBLE);
+                        //mRecyclerViews.setVisibility(View.VISIBLE);
 
                         //Parse the JSON string and store in a list of Movie objects
                         List<String> trailers = JsonUtility.parseTrailersJson(response, movieDetails);
@@ -210,7 +213,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                         // TODO: Handle error
                         Log.i("TAG", error.toString());
                         //mErrorMessage2.setVisibility(View.VISIBLE);
-                        //mPosterRecycViews.setVisibility(View.INVISIBLE);
+                        //mRecyclerViews.setVisibility(View.INVISIBLE);
 
                     }
 
@@ -225,7 +228,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                     public void onResponse(JSONObject response) {
 
                         //mErrorMessage2.setVisibility(View.INVISIBLE);
-                        //mPosterRecycViews.setVisibility(View.VISIBLE);
+                        //mRecyclerViews.setVisibility(View.VISIBLE);
 
                         //Parse the JSON string and store in a list of Movie objects
                         List<String> reviews = JsonUtility.parseReviewsJson(response);
@@ -240,7 +243,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                         // TODO: Handle error
                         Log.i("TAG", error.toString());
                         //mErrorMessage2.setVisibility(View.VISIBLE);
-                        //mPosterRecycViews.setVisibility(View.INVISIBLE);
+                        //mRecyclerViews.setVisibility(View.INVISIBLE);
 
                     }
 
@@ -261,8 +264,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     public void loadReviewData(List<String> reviews){
 
         // Create the linear layout and apply it to the favorites recycler view
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, reviews);
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, reviews);
+        adapter = new ArrayAdapter<>(this, R.layout.review_layout, R.id.tv_reviews, reviews);
         reviewsView.setAdapter(adapter);
+        if(adapter.getCount() == 0){
+            reviewlayout.setVisibility(View.GONE);
+        }
     }
 
     @Override

@@ -9,16 +9,13 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,20 +45,20 @@ import butterknife.ButterKnife;
 import static com.example.android.popularmovies.Utilities.Constants.popularSortLink;
 import static com.example.android.popularmovies.Utilities.Constants.topRatingSortLink;
 
-public class MainActivity extends AppCompatActivity implements PosterAdapter.PosterItemClickHandler {
+public class MainActivity extends AppCompatActivity implements PosterAdapter.PosterItemClickHandler, FavoritesAdapter.FavoritesClickHandler {
 
-   private PosterAdapter posterAdapter;
-    private MovieDataBase mDb;
+    private PosterAdapter posterAdapter;
     private FavoritesAdapter favoritesAdapter;
+    private GridLayoutManager layoutManager1;
+    private MovieDataBase mDb;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private final String FavoriteViewState = "favorites-view-state";
     private boolean VIEWSTATE1;
-    private GridLayoutManager layoutManager1;
 
 
-    @BindView(R.id.rv_posters)RecyclerView mPosterRecycViews;
-    //@BindView(R.id.rv_favorites) RecyclerView mFavRecycViews;
+
+    @BindView(R.id.rv_posters)RecyclerView mRecyclerViews;
     @BindView(R.id.tv_error_message1) TextView mErrorMessage1;
     @BindView(R.id.tv_error_message2) TextView mErrorMessage2;
 
@@ -77,10 +74,6 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         updateUI(popularSortLink);
         loadFavoritesData();
 
-
-
-
-
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
         Log.d("TEST onCreate", "The views may have updated HERE.");
     }
@@ -91,8 +84,8 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         // Create the grid layout and apply it to the poster recycler view
         GridLayoutManager layoutManager = new GridLayoutManager(this,3);
         layoutManager1 = new GridLayoutManager(this,1);
-        mPosterRecycViews.setLayoutManager(layoutManager);
-        mPosterRecycViews.setHasFixedSize(true);
+        mRecyclerViews.setLayoutManager(layoutManager);
+        mRecyclerViews.setHasFixedSize(true);
 
     }
 
@@ -100,10 +93,10 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
     public void updateUI(String movieLink){
         if(!isOnline()){
             mErrorMessage1.setVisibility(View.VISIBLE);
-            mPosterRecycViews.setVisibility(View.INVISIBLE);
+            mRecyclerViews.setVisibility(View.INVISIBLE);
         }else{
             mErrorMessage1.setVisibility(View.INVISIBLE);
-            mPosterRecycViews.setVisibility(View.VISIBLE);
+            mRecyclerViews.setVisibility(View.VISIBLE);
             startApp(movieLink);
         }
     }
@@ -130,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
 
                         setRecyclerViews();
                         mErrorMessage2.setVisibility(View.INVISIBLE);
-                        mPosterRecycViews.setVisibility(View.VISIBLE);
+                        mRecyclerViews.setVisibility(View.VISIBLE);
                         VIEWSTATE1 = false;
 
                         //Parse the JSON string and store in a list of Movie objects
@@ -146,7 +139,8 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
                         // TODO: Handle error
                         Log.i("TAG", error.toString());
                         mErrorMessage2.setVisibility(View.VISIBLE);
-                        mPosterRecycViews.setVisibility(View.INVISIBLE);
+                        mRecyclerViews.setVisibility(View.INVISIBLE);
+                        VIEWSTATE1 = false;
 
                     }
 
@@ -158,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
     public void loadMovieData(List movieDetailsList){
         //Create the adapter using the MovieDetails lists and apply the adapter to the recycler view
         posterAdapter = new PosterAdapter(movieDetailsList, this);
-        mPosterRecycViews.setAdapter(posterAdapter);
+        mRecyclerViews.setAdapter(posterAdapter);
     }
 
     // This method views changes in the favorites database and updates it's cooresponding recycler view
@@ -168,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
             @Override
             public void onChanged(@Nullable List<MovieEntry> movieEntries) {
                 Log.d("TAG", "UPDATE FROM THE DATABASE using livedata in viewmodel");
-                favoritesAdapter = new FavoritesAdapter(movieEntries);
+                favoritesAdapter = new FavoritesAdapter(movieEntries, MainActivity.this);
             }
         });
 
@@ -177,9 +171,9 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
     //This method updates the main view to show the favorites list
     public void showFavsList(){
 
-        mPosterRecycViews.setLayoutManager(layoutManager1);
-        mPosterRecycViews.setHasFixedSize(false);
-        mPosterRecycViews.setAdapter(favoritesAdapter);
+        mRecyclerViews.setLayoutManager(layoutManager1);
+        mRecyclerViews.setHasFixedSize(false);
+        mRecyclerViews.setAdapter(favoritesAdapter);
         mErrorMessage1.setVisibility(View.INVISIBLE);
         VIEWSTATE1 = true;
     }
@@ -191,6 +185,28 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(parcelData, movieDetails);
         startActivity(intent);
+    }
+
+    @Override
+    public void onFavoritesClick(final int adapterPosition) {
+        /*
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final List<MovieEntry> movieEntries = favoritesAdapter.getFavorites();
+                mDb.movieDao().deleteMovie(movieEntries.get(adapterPosition));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRecyclerViews.setAdapter(favoritesAdapter);
+                    }
+                });
+
+            }
+        });
+        */
+
+
     }
 
     //Information sourced from https://developer.android.com/training/monitoring-device-state/connectivity-monitoring
