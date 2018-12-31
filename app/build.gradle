@@ -15,9 +15,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField('String', "APIKey", theMovieDbAPIKey)
+
         }
         debug {
-            buildConfigField('String', "APIKey", theMovieDbAPIKey)
+            buildConfigField('String', "APIKey", theAPIKey)
 
         }
     }

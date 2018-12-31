@@ -76,7 +76,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         setContentView(R.layout.activity_detail);
 
 
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         ButterKnife.bind(this);
         mDb = MovieDataBase.getInstance(getApplicationContext());
 
@@ -84,7 +84,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         movieDetails = getIntent().getParcelableExtra(parcelData);
 
         String movieID = Long.toString(movieDetails.getMovieId());
-        //Log.d("ID", movieID);
 
         loadTrailersAndReviews(tLink1+movieID+tLink2, rLink1+movieID+rLink2);
         updateUI(movieDetails);

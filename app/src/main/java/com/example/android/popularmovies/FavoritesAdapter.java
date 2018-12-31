@@ -32,6 +32,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         mClickHandler = clickHandler;
     }
 
+
     public List<MovieEntry> getFavorites(){
         return mMovieEntries;
     }

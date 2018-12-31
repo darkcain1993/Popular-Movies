@@ -163,6 +163,22 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
             public void onChanged(@Nullable List<MovieEntry> movieEntries) {
                 Log.d("TAG", "UPDATE FROM THE DATABASE using livedata in viewmodel");
                 favoritesAdapter = new FavoritesAdapter(movieEntries, MainActivity.this);
+                //showFavsList();
+                //mRecyclerViews.setAdapter(favoritesAdapter);
+
+            }
+        });
+
+    }
+    public void updateFavoritesData(){
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getMovies().observe(this, new Observer<List<MovieEntry>>() {
+            @Override
+            public void onChanged(@Nullable List<MovieEntry> movieEntries) {
+                Log.d("TAG Update", "UPDATE FROM THE DATABASE using livedata in viewmodel");
+                mRecyclerViews.setLayoutManager(layoutManager1);
+                mRecyclerViews.setHasFixedSize(false);
+                mRecyclerViews.setAdapter(favoritesAdapter);
             }
         });
 
@@ -187,26 +203,24 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         startActivity(intent);
     }
 
-    @Override
+    @Override// This method is supposed to delete  a database item and update the UI. Doesn't currently work so set button invisible
     public void onFavoritesClick(final int adapterPosition) {
-        /*
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
                 final List<MovieEntry> movieEntries = favoritesAdapter.getFavorites();
-                mDb.movieDao().deleteMovie(movieEntries.get(adapterPosition));
+                //mDb.movieDao().deleteMovie(movieEntries.get(adapterPosition));
+                //mRecyclerViews.setAdapter(favoritesAdapter);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mRecyclerViews.setAdapter(favoritesAdapter);
+                        //showFavsList();
+                        //mRecyclerViews.setAdapter(favoritesAdapter);
+                        //updateFavoritesData();
                     }
                 });
-
             }
         });
-        */
-
-
     }
 
     //Information sourced from https://developer.android.com/training/monitoring-device-state/connectivity-monitoring
@@ -265,10 +279,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         if(favoritesState){
             Log.d("TEST onResume", "The views should have updated HERE.");
             showFavsList();
-        }else{
-            showFavsList();
         }
     }
-
 }
 

@@ -38,9 +38,10 @@
                 android:id="@+id/deleteButton"
                 android:layout_width="82dp"
                 android:layout_height="39dp"
-                android:layout_weight="1"
                 android:layout_marginRight="10dp"
-                android:text="Remove"
+                android:layout_weight="1"
+                android:text="@string/remove_button"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 

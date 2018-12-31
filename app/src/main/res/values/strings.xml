@@ -10,4 +10,5 @@
     <string name="error_message2">Loading Error!</string>
     <string name="parcel_data">Parcel Data</string>
     <string name="sort_by_favorites">Favorites</string>
+    <string name="remove_button">Remove</string>
 </resources>
