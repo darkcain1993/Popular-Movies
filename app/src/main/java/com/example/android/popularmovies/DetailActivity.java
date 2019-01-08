@@ -83,12 +83,10 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         String parcelData = DetailActivity.this.getString(R.string.parcel_data);
         movieDetails = getIntent().getParcelableExtra(parcelData);
 
-        String movieID = Long.toString(movieDetails.getMovieId());
-
-        loadTrailersAndReviews(tLink1+movieID+tLink2, rLink1+movieID+rLink2);
         updateUI(movieDetails);
         updateButton();
-
+        String movieID = Long.toString(movieDetails.getMovieId());
+        loadTrailersAndReviews(tLink1+movieID+tLink2, rLink1+movieID+rLink2);
     }
 
     public void updateUI(MovieDetails movieDetails){
@@ -98,7 +96,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         releaseDate.setText(movieDetails.getReleaseDate());
         MOVIE_ID = movieDetails.getMovieId();
 
-                // Loads the image into the image view holder
+        // Loads the image into the image view holder
         Picasso.get().load(imageUrl1 + movieDetails.getPosterImage()).into(moviePoster);
     }
 
