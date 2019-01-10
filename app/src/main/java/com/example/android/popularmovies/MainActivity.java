@@ -70,27 +70,12 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         ButterKnife.bind(this);
         mDb = MovieDataBase.getInstance(getApplicationContext());
 
-        setRecyclerViews();
+      
         updateUI(popularSortLink);
         loadFavoritesData();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //Log.d("TEST onCreate", "The views may have updated HERE.");
-
-        if(savedInstanceState != null){
-            boolean favoritesState = prefs.getBoolean(FavoriteViewState, VIEWSTATE1);
-            if(favoritesState) {
-                favListState = savedInstanceState.getParcelableArrayList(FavListKey);
-                //List<MovieEntry> movies = new ArrayList<>(favListState);
-                if(favListState != null) {
-                    favoritesAdapter = new FavoritesAdapter(favListState, MainActivity.this);
-                    //favoritesAdapter.setFavorites(favListState);
-                    mRecyclerViews.setLayoutManager(layoutManager1);
-                    mRecyclerViews.setHasFixedSize(false);
-                    mRecyclerViews.setAdapter(favoritesAdapter);
-                }
-            }
-        }
+        
     }
 
 
@@ -285,6 +270,27 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         if(favoritesState){
             outState.putParcelableArrayList(FavListKey,favListState);
         }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if(savedInstanceState != null){
+            boolean favoritesState = prefs.getBoolean(FavoriteViewState, VIEWSTATE1);
+            if(favoritesState) {
+                favListState = savedInstanceState.getParcelableArrayList(FavListKey);
+                //List<MovieEntry> movies = new ArrayList<>(favListState);
+
+                favoritesAdapter = new FavoritesAdapter(favListState, MainActivity.this);
+                //favoritesAdapter.setFavorites(favListState);
+                mRecyclerViews.setLayoutManager(layoutManager1);
+                mRecyclerViews.setHasFixedSize(false);
+                mRecyclerViews.setAdapter(favoritesAdapter);
+
+            }
+        }
+
     }
 
     @Override
