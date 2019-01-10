@@ -160,9 +160,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
             public void onChanged(@Nullable List<MovieEntry> movieEntries) {
                 Log.d("TAG", "UPDATE FROM THE DATABASE using livedata in viewmodel");
                 favoritesAdapter = new FavoritesAdapter(movieEntries, MainActivity.this);
-                if(movieEntries != null) {
-                    favListState = new ArrayList<>(movieEntries);
-                }
+                favListState = (ArrayList) movieEntries;
             }
         });
     }
