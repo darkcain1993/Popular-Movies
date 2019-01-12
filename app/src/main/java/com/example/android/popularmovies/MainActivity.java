@@ -97,8 +97,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
                 //Log.d("TEST onCreate", "The views may have updated HERE.");
                 favListState = savedInstanceState.getParcelableArrayList(FAVORITES_KEY);
                 //Log.d("TEST onCreate", favListState.get(0).toString());
-                movies = favListState;
-                Log.d("TEST onCreate", movies.get(0).getOriginalTitle());
+                //movies = favListState;
                 favoritesAdapter = new FavoritesAdapter(favListState, MainActivity.this);
                 //favoritesAdapter.setFavorites(favListState);
                 showFavsList();
