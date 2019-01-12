@@ -5,7 +5,7 @@ import com.example.android.popularmovies.BuildConfig;
 // this class is used to hold constants that may be used in multiple places.
 public abstract class Constants {
 
-  private static final String apiKey = BuildConfig.APIKey;
+    private static final String apiKey = BuildConfig.APIKey;
     public static final String popularSortLink = "https://api.themoviedb.org/3/movie/popular?api_key=" + apiKey ;
     public static final String topRatingSortLink = "https://api.themoviedb.org/3/movie/top_rated?api_key=" + apiKey;
     public static final String tLink1 = "https://api.themoviedb.org/3/movie/";
@@ -15,4 +15,8 @@ public abstract class Constants {
     public static final String imageUrl1 = "http://image.tmdb.org/t/p/" + "w780";
     public static final String imageUrl = "http://image.tmdb.org/t/p/" + "w342" ;
     public static final String trailerVideo = "https://www.youtube.com/watch?v=";
+    public static final String FAVORITES_KEY = "FAVORITES-KEY";
+    public static final String RECYCLER_STATE = "poster_recycler_state";
+    public static final String FAVORITES_VIEW_STATE = "favorites-view-state";
+
 }
