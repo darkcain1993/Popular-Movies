@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -39,9 +40,15 @@ import com.example.android.popularmovies.Database.MovieEntry;
 import com.example.android.popularmovies.Utilities.AppExecutors;
 import com.example.android.popularmovies.Utilities.JsonUtility;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.example.android.popularmovies.Utilities.Constants.FAVORITES_KEY;
+import static com.example.android.popularmovies.Utilities.Constants.FAVORITES_VIEW_STATE;
+import static com.example.android.popularmovies.Utilities.Constants.RECYCLER_STATE;
 import static com.example.android.popularmovies.Utilities.Constants.popularSortLink;
 import static com.example.android.popularmovies.Utilities.Constants.topRatingSortLink;
 
@@ -49,12 +56,19 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
 
     private PosterAdapter posterAdapter;
     private FavoritesAdapter favoritesAdapter;
+    private GridLayoutManager layoutManager;
     private GridLayoutManager layoutManager1;
     private MovieDataBase mDb;
+
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
-    private final String FavoriteViewState = "favorites-view-state";
+
     private boolean VIEWSTATE1;
+    private ArrayList favListState;
+    private Parcelable mRecyclerState = null;
+    private boolean favoritesState;
+
+    private List<MovieEntry> movies;
 
 
 
@@ -70,12 +84,33 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         ButterKnife.bind(this);
         mDb = MovieDataBase.getInstance(getApplicationContext());
 
-      
-        updateUI(popularSortLink);
+
         loadFavoritesData();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        
+        //Log.d("TEST onCreate", "The views may have updated HERE.");
+
+        if(savedInstanceState != null){
+            favoritesState = prefs.getBoolean(FAVORITES_VIEW_STATE, VIEWSTATE1);
+
+            if(favoritesState){
+                //Log.d("TEST onCreate", "The views may have updated HERE.");
+                favListState = savedInstanceState.getParcelableArrayList(FAVORITES_KEY);
+                //Log.d("TEST onCreate", favListState.get(0).toString());
+                movies = favListState;
+                Log.d("TEST onCreate", movies.get(0).getOriginalTitle());
+                favoritesAdapter = new FavoritesAdapter(favListState, MainActivity.this);
+                //favoritesAdapter.setFavorites(favListState);
+                showFavsList();
+                VIEWSTATE1 = true;
+
+            }else{
+                Log.d("TEST onCreate", "The views SADLY may have updated HERE.");
+                updateUI(popularSortLink);
+            }
+        }else{
+            updateUI(popularSortLink);
+        }
     }
 
 
@@ -83,7 +118,9 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
     public void setRecyclerViews(){
         // Create the grid layout and apply it to the poster recycler view
         layoutManager = new GridLayoutManager(this,3);
-        layoutManager1 = new GridLayoutManager(this,1);
+        if(mRecyclerState != null){
+            layoutManager.onRestoreInstanceState(mRecyclerState);
+        }
         mRecyclerViews.setLayoutManager(layoutManager);
         mRecyclerViews.setHasFixedSize(true);
 
@@ -160,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
             public void onChanged(@Nullable List<MovieEntry> movieEntries) {
                 Log.d("TAG", "UPDATE FROM THE DATABASE using livedata in viewmodel");
                 favoritesAdapter = new FavoritesAdapter(movieEntries, MainActivity.this);
-                favListState = (ArrayList) movieEntries;
+                favListState = (ArrayList)(movieEntries);
             }
         });
     }
@@ -181,7 +218,10 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
     //This method updates the main view to show the favorites list
     public void showFavsList(){
 
-
+        layoutManager1 = new GridLayoutManager(this,1);
+        if(mRecyclerState != null){
+            layoutManager1.onRestoreInstanceState(mRecyclerState);
+        }
         mRecyclerViews.setLayoutManager(layoutManager1);
         mRecyclerViews.setHasFixedSize(false);
         mRecyclerViews.setAdapter(favoritesAdapter);
@@ -263,10 +303,16 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        boolean favoritesState = prefs.getBoolean(FavoriteViewState, VIEWSTATE1);
+        favoritesState = prefs.getBoolean(FAVORITES_VIEW_STATE, VIEWSTATE1);
         //Log.d("TEST", String.valueOf(favoritesState));
         if(favoritesState){
-            outState.putParcelableArrayList(FavListKey,favListState);
+            mRecyclerState = layoutManager1.onSaveInstanceState();
+            outState.putParcelable(RECYCLER_STATE, mRecyclerState);
+            outState.putParcelableArrayList(FAVORITES_KEY, favListState);
+        }else{
+            //this will save the scroll position on the recyclerView
+            mRecyclerState = layoutManager.onSaveInstanceState();
+            outState.putParcelable(RECYCLER_STATE, mRecyclerState);
         }
     }
 
@@ -274,20 +320,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        if(savedInstanceState != null){
-            boolean favoritesState = prefs.getBoolean(FavoriteViewState, VIEWSTATE1);
-            if(favoritesState) {
-                favListState = savedInstanceState.getParcelableArrayList(FavListKey);
-                //List<MovieEntry> movies = new ArrayList<>(favListState);
 
-                favoritesAdapter = new FavoritesAdapter(favListState, MainActivity.this);
-                //favoritesAdapter.setFavorites(favListState);
-                mRecyclerViews.setLayoutManager(layoutManager1);
-                mRecyclerViews.setHasFixedSize(false);
-                mRecyclerViews.setAdapter(favoritesAdapter);
-
-            }
-        }
 
     }
 
@@ -295,8 +328,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
     protected void onPause() {
         super.onPause();
         editor = prefs.edit();
-        editor.putBoolean(FavoriteViewState, VIEWSTATE1);
+        editor.putBoolean(FAVORITES_VIEW_STATE, VIEWSTATE1);
         editor.apply();
     }
 }
-
